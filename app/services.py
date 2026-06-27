@@ -1,9 +1,10 @@
 from decimal import Decimal
 
 from sqlalchemy import select
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, selectinload
 
-from app.models import Product
+from app.models import Order, OrderItem, Product
+from app.schemas import OrderCreate
 
 
 INITIAL_PRODUCTS = (
@@ -29,3 +30,82 @@ def seed_products(session: Session) -> None:
 
 def list_products(session: Session) -> list[Product]:
     return list(session.scalars(select(Product).order_by(Product.id)))
+
+
+class ResourceNotFoundError(Exception):
+    pass
+
+
+def create_order(session: Session, data: OrderCreate) -> Order:
+    quantities: dict[int, int] = {}
+    for item in data.itens:
+        quantities[item.produto_id] = quantities.get(item.produto_id, 0) + item.quantidade
+
+    products = list(
+        session.scalars(
+            select(Product)
+            .where(Product.id.in_(quantities))
+            .order_by(Product.id)
+        )
+    )
+    products_by_id = {product.id: product for product in products}
+
+    for product_id in quantities:
+        if product_id not in products_by_id:
+            raise ResourceNotFoundError(f"Produto {product_id} não encontrado.")
+
+    order = Order(status="recebido", total=Decimal("0.00"))
+    for product_id, quantity in quantities.items():
+        product = products_by_id[product_id]
+        order.items.append(
+            OrderItem(
+                product=product,
+                quantity=quantity,
+                unit_price=product.price,
+            )
+        )
+
+    order.total = sum(
+        (item.unit_price * item.quantity for item in order.items),
+        start=Decimal("0.00"),
+    )
+    session.add(order)
+    session.commit()
+    session.refresh(order)
+    return order
+
+
+def _orders_query():
+    return select(Order).options(
+        selectinload(Order.items).selectinload(OrderItem.product)
+    )
+
+
+def list_orders(session: Session) -> list[Order]:
+    return list(session.scalars(_orders_query().order_by(Order.created_at.desc())))
+
+
+def get_order(session: Session, order_id: int) -> Order:
+    order = session.scalar(_orders_query().where(Order.id == order_id))
+    if order is None:
+        raise ResourceNotFoundError(f"Pedido {order_id} não encontrado.")
+    return order
+
+
+def order_to_dict(order: Order) -> dict:
+    return {
+        "id": order.id,
+        "status": order.status,
+        "total": order.total,
+        "criado_em": order.created_at,
+        "itens": [
+            {
+                "produto_id": item.product_id,
+                "nome_produto": item.product.name,
+                "quantidade": item.quantity,
+                "preco_unitario": item.unit_price,
+                "subtotal": item.unit_price * item.quantity,
+            }
+            for item in order.items
+        ],
+    }

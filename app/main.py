@@ -3,6 +3,7 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 
 from app.database import Base, SessionLocal, engine
+from app.routers.orders import router as orders_router
 from app.routers.products import router as products_router
 from app.services import seed_products
 
@@ -23,6 +24,7 @@ def create_app(initialize_database: bool = True) -> FastAPI:
         lifespan=lifespan,
     )
     application.include_router(products_router)
+    application.include_router(orders_router)
     return application
 
 
