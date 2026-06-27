@@ -247,7 +247,7 @@ Casos cobertos:
 Resultado da entrega:
 
 ```text
-19 passed
+20 passed
 ```
 
 ## Evidências

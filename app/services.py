@@ -1,3 +1,4 @@
+from datetime import timezone
 from decimal import Decimal
 
 from sqlalchemy import select
@@ -126,11 +127,17 @@ def delete_order(session: Session, order_id: int) -> None:
 
 
 def order_to_dict(order: Order) -> dict:
+    created_at = order.created_at
+    if created_at.tzinfo is None:
+        created_at = created_at.replace(tzinfo=timezone.utc)
+    else:
+        created_at = created_at.astimezone(timezone.utc)
+
     return {
         "id": order.id,
         "status": order.status,
         "total": order.total,
-        "criado_em": order.created_at,
+        "criado_em": created_at,
         "itens": [
             {
                 "produto_id": item.product_id,

@@ -1,3 +1,4 @@
+from datetime import datetime, timezone
 from decimal import Decimal
 
 
@@ -25,6 +26,14 @@ def test_creates_order_and_calculates_total_on_server(client):
     assert Decimal(body["total"]) == Decimal(chosen["preco"]) * 2
     assert body["itens"][0]["nome_produto"] == chosen["nome"]
     assert body["itens"][0]["quantidade"] == 2
+
+
+def test_returns_creation_time_explicitly_in_utc(client):
+    created = create_order(client).json()
+
+    creation_time = datetime.fromisoformat(created["criado_em"])
+
+    assert creation_time.tzinfo == timezone.utc
 
 
 def test_consolidates_repeated_products(client):
