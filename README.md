@@ -126,7 +126,7 @@ docs/                    # Arquitetura, especificação e evidências
 ### Windows PowerShell
 
 ```powershell
-git clone URL_DO_REPOSITORIO
+git clone https://github.com/bNDorneles/sistema-pedidos-http.git
 cd sistema-pedidos-http
 python -m venv .venv
 .\.venv\Scripts\Activate.ps1
@@ -143,7 +143,7 @@ Se o PowerShell bloquear a ativação, é possível usar diretamente:
 ### Linux ou macOS
 
 ```bash
-git clone URL_DO_REPOSITORIO
+git clone https://github.com/bNDorneles/sistema-pedidos-http.git
 cd sistema-pedidos-http
 python3 -m venv .venv
 source .venv/bin/activate
