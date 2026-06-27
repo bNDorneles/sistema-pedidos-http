@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Demonstração de uma API REST HTTP para pedidos de restaurante.">
+    <title>Mesa Rápida | Pedidos HTTP</title>
+    <link rel="stylesheet" href="/static/styles.css">
+    <script src="/static/app.js" defer></script>
+  </head>
+  <body>
+    <a class="skip-link" href="#conteudo">Pular para o conteúdo</a>
+
+    <header class="topbar">
+      <a class="brand" href="/" aria-label="Mesa Rápida — página inicial">
+        <span class="brand-mark" aria-hidden="true">MR</span>
+        <span>
+          <strong>Mesa Rápida</strong>
+          <small>Pedidos via HTTP</small>
+        </span>
+      </a>
+      <nav aria-label="Navegação principal">
+        <a href="#cardapio">Cardápio</a>
+        <a href="#pedidos">Pedidos</a>
+        <a class="docs-link" href="/docs" target="_blank" rel="noreferrer">Abrir Swagger</a>
+      </nav>
+    </header>
+
+    <main id="conteudo">
+      <section class="hero" aria-labelledby="titulo-principal">
+        <div>
+          <p class="eyebrow">Prova de conceito de Redes</p>
+          <h1 id="titulo-principal">Do clique à cozinha, cada etapa é uma requisição HTTP.</h1>
+          <p class="hero-copy">
+            Escolha os itens, envie o pedido e acompanhe o fluxo REST em tempo real.
+            A mesma API está aberta no Swagger para inspeção técnica.
+          </p>
+          <div class="hero-actions">
+            <a class="button primary" href="#cardapio">Montar pedido</a>
+            <a class="button secondary" href="/docs" target="_blank" rel="noreferrer">Explorar API</a>
+          </div>
+        </div>
+        <aside class="http-card" aria-label="Resumo técnico">
+          <span class="live-dot"><i aria-hidden="true"></i> API disponível</span>
+          <h2>HTTP + REST + JSON</h2>
+          <dl>
+            <div><dt>Métodos</dt><dd>GET · POST · PATCH · DELETE</dd></div>
+            <div><dt>Backend</dt><dd>FastAPI + SQLite</dd></div>
+            <div><dt>Documentação</dt><dd>OpenAPI / Swagger</dd></div>
+          </dl>
+        </aside>
+      </section>
+
+      <section class="workspace" aria-label="Montagem do pedido">
+        <div class="menu-panel">
+          <div class="section-heading">
+            <div>
+              <p class="eyebrow">GET /api/produtos</p>
+              <h2 id="cardapio">Cardápio</h2>
+            </div>
+            <span id="menu-count" class="count-pill">Carregando</span>
+          </div>
+          <div id="menu-grid" class="menu-grid" aria-busy="true"></div>
+        </div>
+
+        <aside class="cart-panel" aria-labelledby="carrinho-titulo">
+          <p class="eyebrow">POST /api/pedidos</p>
+          <h2 id="carrinho-titulo">Seu pedido</h2>
+          <div id="cart-items" class="cart-items">
+            <p class="empty-state">Selecione um item do cardápio para começar.</p>
+          </div>
+          <div class="cart-total">
+            <span>Total</span>
+            <strong id="cart-total">R$ 0,00</strong>
+          </div>
+          <button id="submit-order" class="button primary full" type="button" disabled>
+            Enviar pedido
+          </button>
+          <p class="helper">O total é recalculado no servidor para evitar manipulação pelo cliente.</p>
+        </aside>
+      </section>
+
+      <section class="orders-section" aria-labelledby="pedidos">
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">GET · PATCH · DELETE</p>
+            <h2 id="pedidos">Acompanhamento dos pedidos</h2>
+          </div>
+          <button id="refresh-orders" class="button secondary compact" type="button">Atualizar lista</button>
+        </div>
+        <div id="orders-list" class="orders-list" aria-busy="true"></div>
+      </section>
+    </main>
+
+    <footer>
+      <p>Projeto acadêmico de Bernardo Gomes Dorneles · Matrícula 2410103114</p>
+      <p>Disciplina de Redes · Professor Silvio Ereno Quincozes</p>
+    </footer>
+
+    <div id="toast" class="toast" role="status" aria-live="polite" aria-atomic="true"></div>
+  </body>
+</html>
