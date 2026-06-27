@@ -36,6 +36,10 @@ class ResourceNotFoundError(Exception):
     pass
 
 
+class BusinessRuleError(Exception):
+    pass
+
+
 def create_order(session: Session, data: OrderCreate) -> Order:
     quantities: dict[int, int] = {}
     for item in data.itens:
@@ -90,6 +94,35 @@ def get_order(session: Session, order_id: int) -> Order:
     if order is None:
         raise ResourceNotFoundError(f"Pedido {order_id} não encontrado.")
     return order
+
+
+NEXT_STATUS = {
+    "recebido": "preparando",
+    "preparando": "pronto",
+    "pronto": "entregue",
+}
+
+
+def update_order_status(session: Session, order_id: int, new_status: str) -> Order:
+    order = get_order(session, order_id)
+    expected = NEXT_STATUS.get(order.status)
+    if new_status != expected:
+        expected_message = expected or "nenhum (pedido finalizado)"
+        raise BusinessRuleError(
+            f"Transição inválida: de '{order.status}' para '{new_status}'. "
+            f"Próximo estado permitido: {expected_message}."
+        )
+
+    order.status = new_status
+    session.commit()
+    session.refresh(order)
+    return order
+
+
+def delete_order(session: Session, order_id: int) -> None:
+    order = get_order(session, order_id)
+    session.delete(order)
+    session.commit()
 
 
 def order_to_dict(order: Order) -> dict:

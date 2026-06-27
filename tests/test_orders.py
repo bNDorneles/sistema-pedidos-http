@@ -87,3 +87,81 @@ def test_returns_404_for_unknown_order(client):
 
     assert response.status_code == 404
     assert response.json()["detail"] == "Pedido 99999 não encontrado."
+
+
+def test_advances_order_status(client):
+    created = create_order(client).json()
+
+    response = client.patch(
+        f"/api/pedidos/{created['id']}/status",
+        json={"status": "preparando"},
+    )
+
+    assert response.status_code == 200
+    assert response.json()["status"] == "preparando"
+
+
+def test_rejects_status_that_skips_the_flow(client):
+    created = create_order(client).json()
+
+    response = client.patch(
+        f"/api/pedidos/{created['id']}/status",
+        json={"status": "pronto"},
+    )
+
+    assert response.status_code == 400
+    assert "Transição inválida" in response.json()["detail"]
+
+
+def test_rejects_unknown_status_value(client):
+    created = create_order(client).json()
+
+    response = client.patch(
+        f"/api/pedidos/{created['id']}/status",
+        json={"status": "voando"},
+    )
+
+    assert response.status_code == 422
+
+
+def test_completes_status_flow_and_blocks_delivered_order(client):
+    created = create_order(client).json()
+    order_id = created["id"]
+
+    for next_status in ("preparando", "pronto", "entregue"):
+        response = client.patch(
+            f"/api/pedidos/{order_id}/status",
+            json={"status": next_status},
+        )
+        assert response.status_code == 200
+
+    blocked = client.patch(
+        f"/api/pedidos/{order_id}/status",
+        json={"status": "entregue"},
+    )
+    assert blocked.status_code == 400
+
+
+def test_returns_404_when_updating_unknown_order(client):
+    response = client.patch(
+        "/api/pedidos/99999/status",
+        json={"status": "preparando"},
+    )
+
+    assert response.status_code == 404
+
+
+def test_deletes_order(client):
+    created = create_order(client).json()
+
+    response = client.delete(f"/api/pedidos/{created['id']}")
+
+    assert response.status_code == 204
+    assert response.content == b""
+    assert client.get(f"/api/pedidos/{created['id']}").status_code == 404
+
+
+def test_returns_404_when_deleting_unknown_order(client):
+    response = client.delete("/api/pedidos/99999")
+
+    assert response.status_code == 404
