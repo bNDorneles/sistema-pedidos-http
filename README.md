@@ -24,6 +24,8 @@ O sistema permite:
 - montar e enviar um pedido;
 - calcular o total no servidor;
 - listar e consultar pedidos;
+- visualizar resumo de pedidos por status;
+- filtrar pedidos por status no painel;
 - avançar o estado de um pedido;
 - cancelar pedidos;
 - explorar e testar a API pelo Swagger.
@@ -92,10 +94,9 @@ Mais detalhes estão em [docs/arquitetura.md](docs/arquitetura.md).
 
 ## Documentação da entrega
 
-Além deste README, o repositório contém documentos de apoio para avaliação e apresentação:
+Além deste README, o repositório contém documentos de apoio para avaliação e documentação:
 
 - [Relatório do projeto](docs/relatorio.md): versão acadêmica com cenário, requisitos, justificativa, comparação dos protocolos, resultados e conclusão;
-- [Roteiro de apresentação](docs/roteiro-apresentacao.md): sequência sugerida para demonstrar o sistema ao professor;
 - [Arquitetura](docs/arquitetura.md): visão técnica da estrutura da aplicação, camadas e fluxo de dados.
 
 ## Tecnologias
@@ -179,6 +180,7 @@ O arquivo `restaurante.db` e o cardápio inicial são criados automaticamente.
 | `GET` | `/api/produtos` | Listar cardápio | `200 OK` |
 | `POST` | `/api/pedidos` | Criar pedido | `201 Created` |
 | `GET` | `/api/pedidos` | Listar pedidos | `200 OK` |
+| `GET` | `/api/pedidos/resumo` | Resumir pedidos por status | `200 OK` |
 | `GET` | `/api/pedidos/{id}` | Consultar pedido | `200 OK` |
 | `PATCH` | `/api/pedidos/{id}/status` | Avançar estado | `200 OK` |
 | `DELETE` | `/api/pedidos/{id}` | Cancelar pedido | `204 No Content` |
@@ -247,6 +249,8 @@ Casos cobertos:
 - consolidação de produtos repetidos;
 - pedido vazio, quantidade inválida e produto inexistente;
 - listagem e consulta;
+- resumo de pedidos por status;
+- presença do filtro e do resumo na interface;
 - fluxo completo dos estados;
 - transições inválidas;
 - cancelamento;
@@ -255,7 +259,7 @@ Casos cobertos:
 Resultado da entrega:
 
 ```text
-20 passed
+22 passed
 ```
 
 ## Evidências

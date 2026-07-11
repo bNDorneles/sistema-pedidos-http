@@ -31,3 +31,12 @@ def test_serves_frontend_assets(client):
     assert "--color-primary" in css.text
     assert javascript.status_code == 200
     assert "/api/pedidos" in javascript.text
+
+
+def test_frontend_exposes_order_summary_and_status_filter(client):
+    html = client.get("/").text
+    javascript = client.get("/static/app.js").text
+
+    assert 'id="summary-grid"' in html
+    assert 'id="status-filter"' in html
+    assert "/api/pedidos/resumo" in javascript

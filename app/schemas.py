@@ -39,5 +39,10 @@ class OrderResponse(BaseModel):
     itens: list[OrderItemResponse]
 
 
+class OrderSummaryResponse(BaseModel):
+    total: int
+    por_status: dict[str, int]
+
+
 class OrderStatusUpdate(BaseModel):
     status: Literal["recebido", "preparando", "pronto", "entregue"]

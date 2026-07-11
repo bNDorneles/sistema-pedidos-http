@@ -61,7 +61,7 @@ A aplicação possui duas partes principais:
 1. Interface web, disponível em `http://127.0.0.1:8000`.
 2. API REST, disponível em rotas iniciadas por `/api`.
 
-O usuário pode abrir a interface, selecionar produtos do cardápio, criar pedidos e acompanhar os pedidos cadastrados. A API calcula o total no servidor, valida os dados recebidos e impede transições inválidas de status.
+O usuário pode abrir a interface, selecionar produtos do cardápio, criar pedidos, visualizar um resumo por status, filtrar a lista de pedidos e acompanhar os pedidos cadastrados. A API calcula o total no servidor, valida os dados recebidos e impede transições inválidas de status.
 
 Exemplos de regras implementadas:
 
@@ -79,6 +79,7 @@ Exemplos de regras implementadas:
 | `GET` | `/api/produtos` | Listar cardápio | `200 OK` |
 | `POST` | `/api/pedidos` | Criar pedido | `201 Created` |
 | `GET` | `/api/pedidos` | Listar pedidos | `200 OK` |
+| `GET` | `/api/pedidos/resumo` | Resumir pedidos por status | `200 OK` |
 | `GET` | `/api/pedidos/{id}` | Consultar pedido específico | `200 OK` |
 | `PATCH` | `/api/pedidos/{id}/status` | Avançar status | `200 OK` |
 | `DELETE` | `/api/pedidos/{id}` | Cancelar pedido | `204 No Content` |
@@ -124,12 +125,14 @@ A prova de conceito demonstrou:
 - documentação automática da API com Swagger;
 - persistência local com SQLite;
 - validação de regras no servidor;
+- resumo de pedidos por status;
+- filtro visual de pedidos no painel web;
 - testes automatizados cobrindo os principais fluxos.
 
 O resultado dos testes automatizados da entrega é:
 
 ```text
-20 passed
+22 passed
 ```
 
 ## 10. Limitações e melhorias futuras

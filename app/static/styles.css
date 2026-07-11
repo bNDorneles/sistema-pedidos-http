@@ -474,6 +474,73 @@ dd {
   border-top: 1px solid var(--color-border);
 }
 
+.orders-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: end;
+  justify-content: flex-end;
+  gap: 12px;
+}
+
+.filter-field {
+  display: grid;
+  gap: 6px;
+  color: var(--color-muted);
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.filter-field select {
+  min-height: 44px;
+  min-width: 170px;
+  padding: 8px 12px;
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+  background: var(--color-surface);
+  color: var(--color-foreground);
+  font: inherit;
+  font-weight: 700;
+}
+
+.summary-grid {
+  display: grid;
+  margin-bottom: 24px;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.summary-card {
+  display: grid;
+  min-height: 96px;
+  padding: 16px;
+  place-items: start;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+  color: var(--color-foreground);
+  cursor: pointer;
+  text-align: left;
+  box-shadow: var(--shadow-sm);
+}
+
+.summary-card:hover,
+.summary-card.active {
+  border-color: var(--color-primary);
+  background: var(--color-surface-alt);
+}
+
+.summary-card span {
+  color: var(--color-muted);
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.summary-card strong {
+  font-size: 34px;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+
 .orders-list {
   display: grid;
   gap: 16px;
@@ -591,6 +658,10 @@ footer p {
     grid-template-columns: 150px 1fr;
   }
 
+  .summary-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
   .order-actions {
     grid-column: 1 / -1;
   }
@@ -623,6 +694,16 @@ footer p {
   footer {
     align-items: flex-start;
     flex-direction: column;
+  }
+
+  .orders-toolbar,
+  .filter-field,
+  .filter-field select {
+    width: 100%;
+  }
+
+  .summary-grid {
+    grid-template-columns: 1fr;
   }
 
   .order-card {

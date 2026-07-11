@@ -83,11 +83,24 @@
       <section class="orders-section" aria-labelledby="pedidos">
         <div class="section-heading">
           <div>
-            <p class="eyebrow">GET · PATCH · DELETE</p>
+            <p class="eyebrow">GET /api/pedidos/resumo · GET · PATCH · DELETE</p>
             <h2 id="pedidos">Acompanhamento dos pedidos</h2>
           </div>
-          <button id="refresh-orders" class="button secondary compact" type="button">Atualizar lista</button>
+          <div class="orders-toolbar">
+            <label class="filter-field" for="status-filter">
+              <span>Filtrar por status</span>
+              <select id="status-filter">
+                <option value="todos">Todos</option>
+                <option value="recebido">Recebido</option>
+                <option value="preparando">Preparando</option>
+                <option value="pronto">Pronto</option>
+                <option value="entregue">Entregue</option>
+              </select>
+            </label>
+            <button id="refresh-orders" class="button secondary compact" type="button">Atualizar lista</button>
+          </div>
         </div>
+        <div id="summary-grid" class="summary-grid" aria-label="Resumo dos pedidos"></div>
         <div id="orders-list" class="orders-list" aria-busy="true"></div>
       </section>
     </main>

@@ -1,7 +1,7 @@
 from datetime import timezone
 from decimal import Decimal
 
-from sqlalchemy import select
+from sqlalchemy import func, select
 from sqlalchemy.orm import Session, selectinload
 
 from app.models import Order, OrderItem, Product
@@ -88,6 +88,25 @@ def _orders_query():
 
 def list_orders(session: Session) -> list[Order]:
     return list(session.scalars(_orders_query().order_by(Order.created_at.desc())))
+
+
+def summarize_orders(session: Session) -> dict:
+    counts = {
+        "recebido": 0,
+        "preparando": 0,
+        "pronto": 0,
+        "entregue": 0,
+    }
+    rows = session.execute(
+        select(Order.status, func.count(Order.id)).group_by(Order.status)
+    )
+    for status, amount in rows:
+        counts[status] = amount
+
+    return {
+        "total": sum(counts.values()),
+        "por_status": counts,
+    }
 
 
 def get_order(session: Session, order_id: int) -> Order:

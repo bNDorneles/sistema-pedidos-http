@@ -4,7 +4,7 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 
 from app.database import get_db
-from app.schemas import OrderCreate, OrderResponse, OrderStatusUpdate
+from app.schemas import OrderCreate, OrderResponse, OrderStatusUpdate, OrderSummaryResponse
 from app.services import (
     BusinessRuleError,
     ResourceNotFoundError,
@@ -13,6 +13,7 @@ from app.services import (
     get_order,
     list_orders,
     order_to_dict,
+    summarize_orders,
     update_order_status,
 )
 
@@ -35,6 +36,11 @@ def post_order(data: OrderCreate, session: DatabaseSession) -> dict:
 @router.get("", response_model=list[OrderResponse])
 def get_orders(session: DatabaseSession) -> list[dict]:
     return [order_to_dict(order) for order in list_orders(session)]
+
+
+@router.get("/resumo", response_model=OrderSummaryResponse)
+def get_orders_summary(session: DatabaseSession) -> dict:
+    return summarize_orders(session)
 
 
 @router.get("/{order_id}", response_model=OrderResponse)

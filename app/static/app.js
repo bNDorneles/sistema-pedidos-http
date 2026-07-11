@@ -2,6 +2,16 @@ const state = {
   products: [],
   cart: new Map(),
   orders: [],
+  summary: {
+    total: 0,
+    por_status: {
+      recebido: 0,
+      preparando: 0,
+      pronto: 0,
+      entregue: 0,
+    },
+  },
+  selectedStatus: "todos",
 };
 
 const money = new Intl.NumberFormat("pt-BR", {
@@ -21,6 +31,14 @@ const nextStatus = {
   preparando: "pronto",
   pronto: "entregue",
 };
+
+const summaryItems = [
+  ["total", "Total"],
+  ["recebido", "Recebidos"],
+  ["preparando", "Preparando"],
+  ["pronto", "Prontos"],
+  ["entregue", "Entregues"],
+];
 
 const byId = (id) => document.getElementById(id);
 
@@ -214,10 +232,49 @@ function createOrderCard(order) {
   return card;
 }
 
+function renderSummary() {
+  const grid = byId("summary-grid");
+  grid.replaceChildren();
+
+  summaryItems.forEach(([status, label]) => {
+    const value = status === "total"
+      ? state.summary.total
+      : state.summary.por_status[status] || 0;
+    const isActive = status === "total"
+      ? state.selectedStatus === "todos"
+      : state.selectedStatus === status;
+    const card = element("button", {
+      className: `summary-card ${isActive ? "active" : ""}`,
+      attributes: {
+        type: "button",
+        "aria-pressed": String(isActive),
+      },
+    });
+    card.append(
+      element("span", { text: label }),
+      element("strong", { text: value }),
+    );
+    card.addEventListener("click", () => {
+      state.selectedStatus = status === "total" ? "todos" : status;
+      byId("status-filter").value = state.selectedStatus;
+      renderSummary();
+      renderOrders();
+    });
+    grid.append(card);
+  });
+}
+
+function filteredOrders() {
+  if (state.selectedStatus === "todos") return state.orders;
+  return state.orders.filter((order) => order.status === state.selectedStatus);
+}
+
 function renderOrders() {
   const container = byId("orders-list");
   container.replaceChildren();
   container.setAttribute("aria-busy", "false");
+
+  const visibleOrders = filteredOrders();
 
   if (state.orders.length === 0) {
     container.append(element("p", {
@@ -227,7 +284,15 @@ function renderOrders() {
     return;
   }
 
-  state.orders.forEach((order) => container.append(createOrderCard(order)));
+  if (visibleOrders.length === 0) {
+    container.append(element("p", {
+      className: "empty-state",
+      text: "Nenhum pedido encontrado para este filtro.",
+    }));
+    return;
+  }
+
+  visibleOrders.forEach((order) => container.append(createOrderCard(order)));
 }
 
 async function loadProducts() {
@@ -247,7 +312,13 @@ async function loadOrders() {
   const button = byId("refresh-orders");
   button.disabled = true;
   try {
-    state.orders = await request("/api/pedidos");
+    const [summary, orders] = await Promise.all([
+      request("/api/pedidos/resumo"),
+      request("/api/pedidos"),
+    ]);
+    state.summary = summary;
+    state.orders = orders;
+    renderSummary();
     renderOrders();
   } catch (error) {
     showToast(error.message, true);
@@ -312,5 +383,10 @@ async function cancelOrder(orderId, button) {
 
 byId("submit-order").addEventListener("click", submitOrder);
 byId("refresh-orders").addEventListener("click", loadOrders);
+byId("status-filter").addEventListener("change", (event) => {
+  state.selectedStatus = event.target.value;
+  renderSummary();
+  renderOrders();
+});
 
 Promise.all([loadProducts(), loadOrders()]);

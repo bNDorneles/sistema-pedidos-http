@@ -91,6 +91,41 @@ def test_lists_and_gets_created_order(client):
     assert found.json() == created
 
 
+def test_summarizes_orders_by_status(client):
+    received = create_order(client).json()
+    preparing = create_order(client).json()
+    ready = create_order(client).json()
+    delivered = create_order(client).json()
+
+    client.patch(
+        f"/api/pedidos/{preparing['id']}/status",
+        json={"status": "preparando"},
+    )
+    for next_status in ("preparando", "pronto"):
+        client.patch(
+            f"/api/pedidos/{ready['id']}/status",
+            json={"status": next_status},
+        )
+    for next_status in ("preparando", "pronto", "entregue"):
+        client.patch(
+            f"/api/pedidos/{delivered['id']}/status",
+            json={"status": next_status},
+        )
+
+    response = client.get("/api/pedidos/resumo")
+
+    assert response.status_code == 200
+    assert response.json() == {
+        "total": 4,
+        "por_status": {
+            "recebido": 1,
+            "preparando": 1,
+            "pronto": 1,
+            "entregue": 1,
+        },
+    }
+
+
 def test_returns_404_for_unknown_order(client):
     response = client.get("/api/pedidos/99999")
 
