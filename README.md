@@ -90,6 +90,14 @@ flowchart LR
 
 Mais detalhes estão em [docs/arquitetura.md](docs/arquitetura.md).
 
+## Documentação da entrega
+
+Além deste README, o repositório contém documentos de apoio para avaliação e apresentação:
+
+- [Relatório do projeto](docs/relatorio.md): versão acadêmica com cenário, requisitos, justificativa, comparação dos protocolos, resultados e conclusão;
+- [Roteiro de apresentação](docs/roteiro-apresentacao.md): sequência sugerida para demonstrar o sistema ao professor;
+- [Arquitetura](docs/arquitetura.md): visão técnica da estrutura da aplicação, camadas e fluxo de dados.
+
 ## Tecnologias
 
 - Python 3.11 ou superior;
